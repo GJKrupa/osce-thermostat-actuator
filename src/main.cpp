@@ -7,6 +7,8 @@
 #define DI0     7
 #define BAND    8681E5
 
+#define MSG_PREAMBLE "APPLYTEMP,"
+
 Servo servo;
 
 int angle(int temperature) {
@@ -42,8 +44,8 @@ void loop() {
     Serial.println("Available");
     String data = LoRa.readString();
     Serial.println(data);
-    if (data.startsWith("SETTEMP,")) {
-      String tempString = data.substring(8);
+    if (data.startsWith(MSG_PREAMBLE)) {
+      String tempString = data.substring(strlen(MSG_PREAMBLE));
       int temperature = tempString.toInt();
       Serial.println(temperature);
       servo.write(angle(temperature));
