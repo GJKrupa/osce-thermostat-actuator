@@ -7,12 +7,50 @@
 #define DI0     7
 #define BAND    8681E5
 
+#define DEFAULT_TEMP 20
+
 #define MSG_PREAMBLE "APPLYTEMP,"
+
+double angles[] = {
+  158.0, // 10
+  152.5, // 11
+  147, // 12
+  141.5, // 13
+  133.25, // 14
+  125, // 15
+  118.2, // 16
+  111.4, // 17
+  104.9, // 18
+  98.1, // 19
+  91, // 20
+  85.4, // 21
+  79.8, // 22
+  74.2, // 23
+  68.6, // 24
+  63, // 25
+  57.4, // 26
+  51.8, // 27
+  46.2, // 18
+  40.6, // 19
+  35 //20
+};
+
+#define ANGLE_10 158
+#define ANGLE_15 125
+#define ANGLE_20 91
+#define ANGLE_25 63
+#define ANGLE_30 35
 
 Servo servo;
 
 int angle(int temperature) {
-  return map(temperature, 6, 34, 0, 180);
+  int effective = temperature;
+  if (temperature < 10) {
+    effective = 10;
+  } else if (temperature > 30) {
+    effective = 30;
+  }
+  return map((int)(angles[effective-10]), 0, 180, 0, 180);
 }
 
 void setup() {
@@ -24,17 +62,10 @@ void setup() {
 
   if (!LoRa.begin(BAND)) {
     Serial.println("LoRa initialisation error!");
-    while (1) {
-        servo.write(angle(10));
-        delay(500);
-        servo.write(angle(30));
-        delay(500);
-    }
+    while (1);
   } else {
     Serial.println("LoRa initialised");
-    servo.write(0);
-    delay(1000);
-    servo.write(180);
+    servo.write(angle(DEFAULT_TEMP));
   }
 }
 
